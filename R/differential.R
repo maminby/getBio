@@ -73,7 +73,7 @@ run_limmatrend <- function(L) {
   message("limmatrend")
   session_info <- sessionInfo()
   timing <- system.time({
-    dge <- DGEList(L@assays$RNA@counts, group = L$condt)
+    dge <- DGEList(.get_assay_data(L, "counts"), group = L$condt)
     dge <- calcNormFactors(dge)
     design <- model.matrix(~L$condt)
     y <- new("EList")

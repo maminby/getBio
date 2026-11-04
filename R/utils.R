@@ -55,9 +55,12 @@ Get_logic = function(data){
 #'
 #' @export
 Chect_gene = function(expdata,gene){
-  ifelse(length(grep(row.names(expdata),pattern = ''))==0,paste('this gene is no exist'),
-         )
-  row.names(expdata)[grep(row.names(expdata),pattern = 'l')]
+  hits = row.names(expdata)[grep(gene, row.names(expdata))]
+  if (length(hits)==0) {
+    message('this gene is no exist')
+    return(invisible(character(0)))
+  }
+  return(hits)
 }
 
 
@@ -163,8 +166,8 @@ get_correlated_genes <- function(seurat_object = NULL,expression_matrix = NULL, 
     return(top_genes)
   }else{
     message("find correlation genes of any given gene, scRNAseq only")
-    gene_expression <- GetAssayData(seurat_object, slot = "data")[gene_of_interest,]
-    correlation_values <- apply(GetAssayData(seurat_object, slot = "data"), 1, function(x) cor(x, gene_expression))
+    gene_expression <- .get_assay_data(seurat_object, "data")[gene_of_interest,]
+    correlation_values <- apply(.get_assay_data(seurat_object, "data"), 1, function(x) cor(x, gene_expression))
     sorted_genes <- sort(correlation_values, decreasing = TRUE)
     top_genes <- sorted_genes[1:num_genes]
     return(top_genes)

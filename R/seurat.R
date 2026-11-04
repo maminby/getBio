@@ -11,11 +11,7 @@ GatherData.Seurat <- function(object,
   
   assay <- assay %||% "RNA"
   slot_use <- slot_use %||% "data"
-  obj_data <- GetAssayData(
-    object = object,
-    assay = assay,
-    slot = slot_use
-  ) %>%
+  obj_data <- .get_assay_data(object, what = slot_use, assay = assay) %>%
     as.matrix()
   return(obj_data)
 }
@@ -304,7 +300,7 @@ Get_cytometryiod = function(mat.object=NULL,seurat_object=NULL,log=F, genes=c('x
       
       x= genes[1]
       y = genes[2]
-      list1 = seurat_object@assays$RNA@data[genes,]
+      list1 = .get_assay_data(seurat_object, "data")[genes,]
       
       list1 = t(as.matrix(list1))
       list1 = as.data.frame(list1)
@@ -386,7 +382,7 @@ Get_cytometryiod = function(mat.object=NULL,seurat_object=NULL,log=F, genes=c('x
 get_pseudotime = function(pesudo){
   library(monocle3)
   data = pesudo
-  expression_matrix = GetAssayData(pesudo,assay = 'RNA',slot = 'count')
+  expression_matrix = .get_assay_data(pesudo, "counts")
   
   cell_metadata <- pesudo@meta.data
   
@@ -530,7 +526,7 @@ myfindmarkers2 = function(seurat_object,filename,logfc.threshold=0.25,min.pct=0.
   top20 <- all.markers %>% group_by(cluster) %>% top_n(20, p_val_adj)
   heatgene=unique(as.character(top20$gene))
   
-  if(nrow(seurat_object@assays$RNA@scale.data)==0){
+  if(!isTRUE(tryCatch(nrow(.get_assay_data(seurat_object, "scale.data"))>0, error=function(e) FALSE))){
     DefaultAssay(seurat_object)="RNA"
     seurat_object=ScaleData(seurat_object)
   }

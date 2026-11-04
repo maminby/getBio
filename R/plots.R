@@ -180,7 +180,7 @@ Get_Scatterplot2 = function(mat.object=NULL,seurat_object=NULL,log=F, genes=c('x
       
       x= genes[1]
       y = genes[2]
-      list1 = seurat_object@assays$RNA@data[genes,]
+      list1 = .get_assay_data(seurat_object, "data")[genes,]
       
       list1 = t(as.matrix(list1))
       list1 = as.data.frame(list1)
@@ -262,11 +262,15 @@ Get_Scatterplot2 = function(mat.object=NULL,seurat_object=NULL,log=F, genes=c('x
 get_vennplot = function(genelist,filename){
   library(eulerr)
   library(VennDiagram)
+  if (is.null(names(genelist))) names(genelist) = LETTERS[seq_along(genelist)]
   vennlist = get.venn.partitions(genelist)
-  vennlist$..set.. <- vennlist$..set.. %>%
-    str_replace_all("\\(|\\)", "") %>%
-    str_replace_all("∩", "&")%>%
-    str_replace_all("???.*", "")
+  # build the region labels (e.g. "A&B") from the logical membership columns,
+  # instead of string-cleaning the ..set.. column
+  setnames = names(genelist)
+  lab = apply(vennlist[, setnames, drop = FALSE], 1,
+              function(r) paste(setnames[as.logical(r)], collapse = "&"))
+  vennlist = vennlist[lab != "", , drop = FALSE]
+  vennlist$..set.. <- lab[lab != ""]
   euler.obj = euler(setNames(vennlist$..count..,vennlist$..set..))
   
   p1 = plot(euler.obj,

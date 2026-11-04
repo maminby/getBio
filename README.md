@@ -39,4 +39,5 @@ design <- Get_design(tpm, group_list)
 
 - 函数体基本保持原脚本不变，仅做了拆分和打包；原脚本里的 `library()` 保留在各函数内。
 - 原脚本中 `get_gsea` 定义了两次，只保留了后一个（带 `datatype` 参数）。
+- 已修复的原脚本问题：`get_groupheatmap`（未定义变量、`ggsave` 存不了 pheatmap）、`Chect_gene`、GSVA 的 `install.packages(p, repos=site)`（并兼容新版 GSVA API）、`get_vennplot` 的乱码正则、Seurat v5 的 `@assays$RNA@data` 写法（v4/v5 都能用）。
 - 非 CRAN 依赖（`idmap3`、`CellChat`、`monocle3`）放在 Suggests，用到对应函数时再安装。

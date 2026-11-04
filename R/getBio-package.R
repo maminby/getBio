@@ -11,3 +11,12 @@
 
 # fallback for R < 4.4 (identical semantics to base::`%||%`)
 `%||%` <- function(x, y) if (is.null(x)) y else x
+
+# internal: read an assay matrix on both Seurat v4 (slot) and v5 (layer)
+.get_assay_data <- function(object, what = "data", assay = "RNA") {
+  if (utils::packageVersion("SeuratObject") >= "5.0.0") {
+    SeuratObject::GetAssayData(object, assay = assay, layer = what)
+  } else {
+    SeuratObject::GetAssayData(object, assay = assay, slot = what)
+  }
+}

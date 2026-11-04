@@ -6,16 +6,14 @@
 #' @export
 get_groupheatmap = function(tpms,geneset1,group_list,filename,scale = 'row',width = 16,
                             height = 16,cluster_rows = T, cluster_cols =T,annotation_col = NULL,
-                            cellwidth = 20,cellheight =10){
+                            cellwidth = 20,cellheight =10,annotation_colors = NULL){
   #tpms is a expression matrix
   #geneset1 is the gene you want to show, it can also be used for GSEA/GSVA calucation
   #group_list is the group list
+  #annotation_col (optional): data.frame whose row names are the group names
+  #annotation_colors (optional): named list of colours, passed to pheatmap
   library(pheatmap)
   library(grDevices)
-  library(export)
-  if (!is.null(annotation_col)) {
-    annotation_col = factor(merge[,2])
-  }
   genes1 = tpms[row.names(tpms)%in%geneset1,]%>%as.data.frame()
   genes1 = genes1[rowSums(genes1<0.1)<ncol(genes1),]
   name = unique(group_list)
@@ -25,13 +23,19 @@ get_groupheatmap = function(tpms,geneset1,group_list,filename,scale = 'row',widt
   for (i in 1:length(name)) {
     new.genes1[,i] = rowMeans(genes1[,group_list==name[i]])
   }
-  p =pheatmap(new.genes1, scale = scale,annotation_colors = anno_name,
+  p =pheatmap(new.genes1, scale = scale,annotation_colors = annotation_colors,
               color =colorRampPalette(c("blue", "white", "red"))(20),
               cellwidth = cellwidth,cellheight = cellheight,annotation_col = annotation_col,
               cluster_rows = cluster_rows, cluster_cols = cluster_cols,main = filename,
               treeheight_row = 0,treeheight_col = 0)
   print(p)
-  ggsave(filename = filename, height = height,width = width)
+  # pheatmap is not a ggplot, so ggsave() cannot save it: draw its gtable into a pdf
+  out = if (grepl("\\.pdf$", filename, ignore.case = TRUE)) filename else paste0(filename, ".pdf")
+  grDevices::pdf(out, width = width, height = height)
+  grid::grid.newpage()
+  grid::grid.draw(p$gtable)
+  grDevices::dev.off()
+  invisible(p)
 }
 
 

@@ -31,14 +31,23 @@ get_gsea = function(data,datatype = 'nrDEG',geneset,genesetNum,filename,height =
 }
 
 
+# internal: ssGSEA that works with both old (<1.50) and new (>=1.50) GSVA APIs
+.run_ssgsea = function(data, gene_list){
+  if (!requireNamespace("GSVA", quietly = TRUE)) {
+    stop("Package 'GSVA' is required: BiocManager::install('GSVA')")
+  }
+  if ("ssgseaParam" %in% getNamespaceExports("GSVA")) {
+    GSVA::gsva(GSVA::ssgseaParam(data, gene_list))
+  } else {
+    GSVA::gsva(data, gene_list, method='ssgsea', kcdf='Gaussian', abs.ranking=TRUE)
+  }
+}
+
+
 #' get_gsva
 #'
 #' @export
 get_gsva = function(data, gene_set, gene_setname, species = 'm',save =F){
-  if (!suppressWarnings(suppressMessages(require("GSVA", character.only = TRUE, quietly = TRUE, warn.conflicts = FALSE)))) {
-    install.packages(p, repos=site)
-    require("GSVA",character.only=T)
-  }
   if (species=='m'|species=='mouse') {
     gene_set = str_to_title(gene_set)
   }else {
@@ -48,30 +57,26 @@ get_gsva = function(data, gene_set, gene_setname, species = 'm',save =F){
   list = split(as.matrix(gene_set)[,1], rep(gene_setname,length(gene_set)))
   data = get_numMatrix(data)
   
-  ssgseaScore=gsva(data, list, method='ssgsea', kcdf='Gaussian', abs.ranking=TRUE)
+  ssgseaScore=.run_ssgsea(data, list)
   gsva_matrix1<- t(scale(t(ssgseaScore)))
-  return(gsva_matrix1)
   if (save == T) {
     write.table(gsva_matrix1,file=paste0(gene_setname,"ssgseaOut_totalgene_scale.txt"),sep="\t",quote=F)
   }
+  return(gsva_matrix1)
 }
 
 
 #' get_immune_gsva
 #'
 #' @export
-get_immune_gsva = function(data, group_list, gene,save = F){
+get_immune_gsva = function(data, group_list, gene,save = F,gene_set_file = "../mmc3.csv"){
   library(pheatmap)
-  if (!suppressWarnings(suppressMessages(require("GSVA", character.only = TRUE, quietly = TRUE, warn.conflicts = FALSE)))) {
-    install.packages(p, repos=site)
-    require("GSVA",character.only=T)
-  }
-  gene_set<-read.csv("../mmc3.csv")[, 1:2]
+  gene_set<-read.csv(gene_set_file)[, 1:2]
   gene_set$Metagene = str_to_title(gene_set$Metagene)
   
   list<- split(as.matrix(gene_set)[,1], gene_set[,2])
   data = get_numMatrix(data)
-  ssgseaScore=gsva(data, list, method='ssgsea', kcdf='Gaussian', abs.ranking=TRUE)
+  ssgseaScore=.run_ssgsea(data, list)
   gsva_matrix<-ssgseaScore
   
   
