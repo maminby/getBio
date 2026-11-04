@@ -7,7 +7,7 @@ RNA-seq（bulk + 单细胞）分析常用函数集合，由个人脚本 `get_mam
 ```r
 # 依赖中有 Bioconductor 包，建议先装 BiocManager
 install.packages(c("remotes", "BiocManager"))
-remotes::install_github("YOUR_GITHUB_USERNAME/getBio",
+remotes::install_github("maminby/getBio",
                         repos = BiocManager::repositories(),
                         dependencies = TRUE)
 ```
