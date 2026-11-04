@@ -620,10 +620,22 @@ get_seuratgroupGO = function(seurat,filename){
 ## get the prediction of celltype from liver cell atlas biomarkers ##
 #' get the prediction of celltype from liver cell atlas biomarkers
 #'
+#' @param seurat_obj A Seurat object.
+#' @param excel_fullpath Path to the marker workbook (one sheet per cell type,
+#'   gene symbols in the first column). If `NULL` (default), the workbook shipped
+#'   with the package (`inst/extdata/mmc1.xlsx`, liver cell atlas supplementary
+#'   table) is used.
+#' @param species `"Human"` or `"Mouse"`.
 #' @export
 get_predcelltype = function(seurat_obj = NULL, excel_fullpath = NULL,species = 'Human'){
   message('species should be Human or Mouse')
-  sheet_names <- excel_sheets(excel_fullpath)
+  if (is.null(excel_fullpath)) {
+    excel_fullpath <- system.file("extdata", "mmc1.xlsx", package = "getBio")
+    if (!nzchar(excel_fullpath)) {
+      stop("Built-in marker file not found; please supply 'excel_fullpath'.")
+    }
+  }
+  sheet_names <- readxl::excel_sheets(excel_fullpath)
   cell_type_markers <- list()
   
   if (species == 'Human') {
@@ -632,7 +644,7 @@ get_predcelltype = function(seurat_obj = NULL, excel_fullpath = NULL,species = '
     sheet_names = grep(sheet_names,pattern='DEPs|Human',value = T,invert = T)
   }
   for (sheet in sheet_names) {
-    df <- read_excel(excel_fullpath, sheet = sheet)
+    df <- readxl::read_excel(excel_fullpath, sheet = sheet)
     
 
     genes <- df[[1]]
