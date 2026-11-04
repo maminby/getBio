@@ -1,0 +1,56 @@
+Package: getBio
+Type: Package
+Title: Helper Functions for Bulk and Single-Cell RNA-seq Analysis
+Version: 0.1.0
+Authors@R: person("Your", "Name", email = "you@example.com", role = c("aut", "cre"))
+Description: A collection of convenience functions for expression matrix
+    preprocessing, limma differential expression, GO/KEGG/GSEA/GSVA
+    enrichment, common plots (heatmap, PCA, volcano, violin, Venn, scatter)
+    and Seurat-based single-cell workflows.
+License: MIT + file LICENSE
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.3.2
+Depends:
+    R (>= 4.1.0),
+    Seurat,
+    limma,
+    clusterProfiler,
+    ggplot2,
+    dplyr,
+    stringr,
+    pheatmap,
+    survival,
+    survminer,
+    ggsci,
+    readxl,
+    export
+Imports:
+    magrittr,
+    methods,
+    DOSE,
+    edgeR,
+    eulerr,
+    ggExtra,
+    ggpubr,
+    ggrepel,
+    GSVA,
+    patchwork,
+    psych,
+    purrr,
+    RColorBrewer,
+    reshape2,
+    scatterplot3d,
+    tidyr,
+    VennDiagram
+Suggests:
+    CellChat,
+    harmony,
+    idmap3,
+    monocle3,
+    org.Hs.eg.db,
+    org.Mm.eg.db
+Remotes:
+    jmzeng1314/idmap3,
+    sqjin/CellChat,
+    cole-trapnell-lab/monocle3
