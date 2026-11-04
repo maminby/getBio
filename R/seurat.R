@@ -495,7 +495,7 @@ get_percentage = function(seurat,slot1,slot2,filename = NULL){
 #' another myfind marker created by Long J
 #'
 #' @export
-myfindmarkers2 = function(seurat_object,filename,logfc.threshold=0.25,min.pct=0.25,species="human",all.markers=NULL,colors=colors,
+myfindmarkers2 = function(seurat_object,filename,logfc.threshold=0.25,min.pct=0.25,species="human",all.markers=NULL,colors=color_crc,
                           fill_colors=colorRampPalette(c("lightskyblue", "white", "red"))(100)){
   if(is.null(all.markers)){
     all.markers <- FindAllMarkers(object = seurat_object, only.pos = TRUE, min.pct = min.pct, 
@@ -510,7 +510,7 @@ myfindmarkers2 = function(seurat_object,filename,logfc.threshold=0.25,min.pct=0.
   all.markers$p_val_adj=-all.markers$p_val_adj
   all.markers$p_val_adj=all.markers$p_val_adj+length(all.markers$p_val_adj):1
   
-  if(species=="huamn"){
+  if(species=="human"|species=="h"){
     common_markers=c("CD3D","CD3E","CD8A","CD8B","CD4")
   }else{
     common_markers=c("Cd3d","Cd3e","Cd8a","Cd8b1","Cd4")
@@ -535,7 +535,7 @@ myfindmarkers2 = function(seurat_object,filename,logfc.threshold=0.25,min.pct=0.
   pdf(paste0("heatmap_",filename,"_top20.pdf"),width =15, height = 40)
   f1=DoHeatmap(ave_cluster, features = heatgene,
                label = TRUE,size=3,assay = "RNA",lines.width = 1,
-               group.colors = color_crc,draw.lines = F)+
+               group.colors = colors,draw.lines = F)+
     scale_fill_gradientn(colors = fill_colors)
   print(f1)
   dev.off()
@@ -546,7 +546,7 @@ myfindmarkers2 = function(seurat_object,filename,logfc.threshold=0.25,min.pct=0.
   
   pdf(paste0("heatmap_",filename,"_top5.pdf"),width =15, height = 12)
   f2=DoHeatmap(object = ave_cluster, features = unique(as.character(top5$gene)),
-               label = TRUE,size=3,group.colors = color_crc,draw.lines = F)+
+               label = TRUE,size=3,group.colors = colors,draw.lines = F)+
     scale_fill_gradientn(colors = fill_colors)
   print(f2)
   dev.off()
@@ -571,14 +571,14 @@ myfindmarkers2 = function(seurat_object,filename,logfc.threshold=0.25,min.pct=0.
   
   pdf(paste0("total_heatmap_",filename,"_top5.pdf"),width =15, height = 12)
   f4=DoHeatmap(object = seurat_object, features = unique(top5$gene),
-               label = TRUE,size=3,group.colors = color_crc,draw.lines = T)+
+               label = TRUE,size=3,group.colors = colors,draw.lines = T)+
     scale_fill_gradientn(colors = fill_colors)
   print(f4)
   dev.off()
   
   pdf(paste0("total_heatmap_",filename,"_top20.pdf"),width =15, height = 40)
   f5=DoHeatmap(object = seurat_object, features = unique(top20$gene),
-               label = TRUE,size=3,group.colors = color_crc,draw.lines = T)+
+               label = TRUE,size=3,group.colors = colors,draw.lines = T)+
     scale_fill_gradientn(colors = fill_colors)
   print(f5)
   dev.off()

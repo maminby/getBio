@@ -131,7 +131,6 @@ get_broadinstituteORG = function(path){
   expression = Seurat::CreateSeuratObject(expression)
   expression = get_newReduction(expression)
   ## add metadata ##
-  test = read.csv(cluster.path,header = T,row.names = 1)
   expression@meta.data = read.csv(metadata.path,header = T,row.names = 1)[-1,]
   return(expression)
 }
